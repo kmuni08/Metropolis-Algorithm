@@ -33,8 +33,8 @@ public class MetropolisAlgorithm  {
             }
         }
         currentConfiguration = sigma0;
-        System.out.println("sigma0: " + sigma0);
-        System.out.println("Current Configuration: " + currentConfiguration);
+//        System.out.println("sigma0: " + sigma0);
+//        System.out.println("Current Configuration: " + currentConfiguration);
         return currentConfiguration;
     }
 
@@ -52,15 +52,15 @@ public class MetropolisAlgorithm  {
             sigma1.addAll(sigma0);
         }
         sigma1 = changeSigma1(sigma1);
-        System.out.println("sigma1: " + sigma1);
+//        System.out.println("sigma1: " + sigma1);
         return sigma1;
     }
 
     public CircularArrayList<Integer> changeSigma1 (CircularArrayList<Integer> sigma) {
         randomInt = generateRand(1, n);
-        System.out.println("Random int in create sigma1: " + randomInt);
+//        System.out.println("Random int in create sigma1: " + randomInt);
         sigma.set(randomInt, (-1)*(sigma1.get(randomInt)));
-        System.out.println("sigma1 new : " + sigma);
+//        System.out.println("sigma1 new : " + sigma);
         return sigma;
     }
 
@@ -77,9 +77,9 @@ public class MetropolisAlgorithm  {
     }
 
     public CircularArrayList<Integer> replaceConfiguration() {
-        System.out.println("Random Integer: " + randomInt);
-        double deltaE = energyCompute(sigma1, B, C)-energyCompute(sigma0, B, C);
-        System.out.println("deltaE " +  deltaE);
+//        System.out.println("Random Integer: " + randomInt);
+        double deltaE = energyCompute(sigma1, B, C) - energyCompute(currentConfiguration, B, C);
+//        System.out.println("deltaE " +  deltaE);
         double p = 0.0;
         if(deltaE < 0) {
             currentConfiguration = sigma1;
@@ -88,6 +88,8 @@ public class MetropolisAlgorithm  {
             p = Math.exp((-1*deltaE) / T);
         }
         double r = generateRandom(0, 1);
+//        System.out.println("p value: " + p);
+//        System.out.println("Random double " + r);
         if (r < p) {
             //set current configuration to be new configuration.
             currentConfiguration = sigma1;
@@ -95,17 +97,17 @@ public class MetropolisAlgorithm  {
             currentConfiguration = sigma0;
         }
 
-        System.out.println("New Current Configuration " + currentConfiguration);
+//        System.out.println("New Current Configuration " + currentConfiguration);
         return currentConfiguration;
     }
 
      public CircularArrayList<Integer> updateSpinGetCurrentConfig()
     {
-        for(int i = 0; i < N_f * n; i++) {
+        for(int i = 0; i < (N_f * n); i++) {
             //call sigma1 and energyCompute.
-            System.out.println("i value in updateSpingGetCurrentConfig " + i);
+//            System.out.println("i value in updateSpingGetCurrentConfig " + i);
             sigma1 = changeSigma1(sigma1);
-            System.out.println("Changed Sigma 1: " + sigma1);
+//            System.out.println("Changed Sigma 1: " + sigma1);
             currentConfiguration = replaceConfiguration();
 
         }
@@ -113,7 +115,7 @@ public class MetropolisAlgorithm  {
     }
 
     public double computeMagnetizationPerSpin () {
-        CircularArrayList<Integer> sigma_star = updateSpinGetCurrentConfig();
+        CircularArrayList<Integer> sigma_star = currentConfiguration;
         //2.3.1
         // 1/n * summation from i = 1 to n of s_i
         //thermodynamic averages for <m>
@@ -122,14 +124,16 @@ public class MetropolisAlgorithm  {
         }
 
         int summation = 0;
-        for (int i = 1; i < n; i++) {
+        for (int i = 1; i <= n; i++) {
             summation += sigma_star.get(i);
         }
+//        System.out.println("Sigma star: " + sigma_star + " Summation: " + summation);
+//        System.out.println("Magnetization: " + ((1.0/n) * summation));
         return (1.0/n) * summation;
     }
 
     public double pairCorrelationPerSpin () {
-        CircularArrayList<Integer> sigma_star = updateSpinGetCurrentConfig();
+        CircularArrayList<Integer> sigma_star = currentConfiguration;
 
         //2.3.2
         // 1/n * summation from i = 1 to n of s_i*s_i+1
@@ -140,15 +144,18 @@ public class MetropolisAlgorithm  {
         }
 
         int summation = 0;
-        for (int i = 1; i < n; i++) {
+        for (int i = 1; i <= n; i++) {
             summation += sigma_star.get(i)*sigma_star.get(i+1);
         }
+
+//        System.out.println("Sigma star: " + sigma_star + " Summation: " + summation);
+//
+//        System.out.println("Correlation Per Spin Pair : " + ((1.0/n) * summation));
         return (1.0/n) * summation;
     }
 
 
     public static void main(String[] args) {
-        int n = 100;
         int N_t = 1000;
 
 //        MetropolisAlgorithm [] ma = new MetropolisAlgorithm[N_t];
@@ -160,6 +167,9 @@ public class MetropolisAlgorithm  {
         ma.createSigma1();
         ma.replaceConfiguration();
         ma.updateSpinGetCurrentConfig();
+
+        ma.computeMagnetizationPerSpin();
+        ma.pairCorrelationPerSpin();
 //        ma.resultMagnetization.add(ma.computeMagnetizationPerSpin());
 
 //        Thread []thread = new Thread[N_t];
