@@ -4,18 +4,22 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MetropolisAlgorithm  {
+public class MetropolisAlgorithm implements Runnable  {
 
     private int n = 10;
     private int B = 1;
     private int C = 1;
     private int N_f = 4;
     private double T = 1.9;
+    public double m;
+    public double c;
     private int randomInt;
 
     CircularArrayList<Integer> sigma0 = new CircularArrayList<>();
     CircularArrayList<Integer> sigma1 = new CircularArrayList<>();
     CircularArrayList<Integer> currentConfiguration;
+
+
 
     public void setInitialSpinConfiguraton_Sigma0 () {
         for (int i = 0; i < n; i++) {
@@ -35,7 +39,7 @@ public class MetropolisAlgorithm  {
         }
         currentConfiguration = sigma0;
 //        System.out.println("sigma0: " + sigma0);
-        System.out.println("Current Configuration: " + currentConfiguration);
+//        System.out.println("Current Configuration: " + currentConfiguration);
     }
 
     public int generateRand(int first, int second) {
@@ -48,20 +52,20 @@ public class MetropolisAlgorithm  {
 
     public void createSigma1 () {
         //do the pseudorandom generator
-        System.out.println("Current config in sigma 1 creation: " + currentConfiguration);
+//        System.out.println("Current config in sigma 1 creation: " + currentConfiguration);
         if (sigma1.isEmpty()) {
             sigma1.addAll(sigma0);
         }
         sigma1 = changeSigma1(sigma1);
-        System.out.println("sigma1: " + sigma1);
+//        System.out.println("sigma1: " + sigma1);
 //        return sigma1;
     }
 
     public CircularArrayList<Integer> changeSigma1 (CircularArrayList<Integer> sigma) {
         randomInt = generateRand(1, n);
-        System.out.println("Random int in create sigma1: " + randomInt);
+//        System.out.println("Random int in create sigma1: " + randomInt);
         sigma.set(randomInt, (-1)*(sigma1.get(randomInt)));
-        System.out.println("sigma1 new : " + sigma);
+//        System.out.println("sigma1 new : " + sigma);
         return sigma;
     }
 
@@ -78,11 +82,11 @@ public class MetropolisAlgorithm  {
     }
 
     public void replaceConfiguration() {
-        System.out.println("Random Integer: " + randomInt);
-        System.out.println("Sigma1 in replace config " + sigma1);
-        System.out.println("Sigma0 in replace config " + sigma0);
+//        System.out.println("Random Integer: " + randomInt);
+//        System.out.println("Sigma1 in replace config " + sigma1);
+//        System.out.println("Sigma0 in replace config " + sigma0);
         double deltaE = energyCompute(sigma1, B, C) - energyCompute(sigma0, B, C);
-        System.out.println("deltaE " +  deltaE);
+//        System.out.println("deltaE " +  deltaE);
         double p = 0.0;
         if(deltaE < 0) {
             currentConfiguration = sigma1;
@@ -91,14 +95,14 @@ public class MetropolisAlgorithm  {
             p = Math.exp((-1*deltaE) / T);
         }
         double r = generateRandom(0, 1);
-        System.out.println("p value: " + p);
-        System.out.println("Random double " + r);
+//        System.out.println("p value: " + p);
+//        System.out.println("Random double " + r);
         if (r < p) {
             //set current configuration to be new configuration.
             currentConfiguration = sigma1;
         }
 
-        System.out.println("New Current Configuration " + currentConfiguration);
+//        System.out.println("New Current Configuration " + currentConfiguration);
     }
 
      public void updateSpinGetCurrentConfig()
@@ -107,9 +111,9 @@ public class MetropolisAlgorithm  {
         temp.addAll(currentConfiguration);
         for(int i = 0; i < (N_f * n); i++) {
             //call sigma1 and energyCompute.
-            System.out.println("i value in updateSpinGetCurrentConfig " + i);
+//            System.out.println("i value in updateSpinGetCurrentConfig " + i);
             sigma1 = changeSigma1(temp);
-            System.out.println("new sigma1 : " + sigma1);
+//            System.out.println("new sigma1 : " + sigma1);
             replaceConfiguration();
         }
         //return currentConfiguration
@@ -155,78 +159,22 @@ public class MetropolisAlgorithm  {
         return (1.0/n) * summation;
     }
 
-//    @Override
-//    public void run() {
-//        MetropolisAlgorithm ma = new MetropolisAlgorithm();
-//
-//        for(int i = 0; i < 100; i++) {
-//            ma.setInitialSpinConfiguraton_Sigma0();
-//            ma.createSigma1();
-//            ma.replaceConfiguration();
-//            ma.updateSpinGetCurrentConfig();
-//            //waits for one thread to be done before another is put.
-//            Magnetization.add(ma.computeMagnetizationPerSpin());
-//            CorrelationPerSpin.add(ma.pairCorrelationPerSpin());
-//        }
-//    }
-
-    public static void main(String[] args) {
-        int N_t = 1000;
-        CircularArrayList<Integer> sigma_star;
+    @Override
+    public void run() {
         MetropolisAlgorithm ma = new MetropolisAlgorithm();
-
-        //function names to call for the Metropolis Algorithm. They're in the run method, I wrote this for testing.
-        ma.setInitialSpinConfiguraton_Sigma0();
-        ma.createSigma1();
-        ma.replaceConfiguration();
-        ma.updateSpinGetCurrentConfig();
-        ma.computeMagnetizationPerSpin();
-        ma.pairCorrelationPerSpin();
-
-        //Begin threads.
-//        ExecutorService executor= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-//
-//        double[] m = new double[N_t];
-//        double[] c = new double[N_t];
-//        try{
-//            for ( int i=0; i < N_t; i++){
-//                executor.execute(new MetropolisAlgorithm());
-//                m[i] = meanOfEachThread(Magnetization.resultMagnetization);
-//                c[i] = meanOfEachThread(CorrelationPerSpin.resultCorrelation);
-//            }
-//        }catch(Exception err){
-//            err.printStackTrace();
-//        }
-//        executor.shutdown();
-//
-//        double meu = 0.0;
-//        double ceu = 0.0;
-//        try{
-//            for ( int j=0; j < N_t; j++){
-//                meu = sumOfAllThreads(m);
-//                ceu = sumOfAllThreads(c);
-//            }
-//        }catch(Exception err){
-//            err.printStackTrace();
-//        }
-    }
-}
-
-class Magnetization {
-    public static ArrayList<Double> resultMagnetization = new ArrayList<Double>();
-
-    static synchronized void add(Double d) {
-
-        resultMagnetization.add(d);
-    }
-}
-
-class CorrelationPerSpin {
-    public static ArrayList<Double> resultCorrelation = new ArrayList<Double>();
-
-    static synchronized void add(Double d) {
-
-        resultCorrelation.add(d);
+        ArrayList<Double> resultMagnetization = new ArrayList<Double>();
+        ArrayList<Double> resultCorrelation = new ArrayList<Double>();
+        for(int i = 0; i < 100; i++) {
+            ma.setInitialSpinConfiguraton_Sigma0();
+            ma.createSigma1();
+            ma.replaceConfiguration();
+            ma.updateSpinGetCurrentConfig();
+            //waits for one thread to be done before another is put.
+            resultMagnetization.add(ma.computeMagnetizationPerSpin());
+            resultCorrelation.add(ma.pairCorrelationPerSpin());
+        }
+        m = Main.meanOfEachThread(resultMagnetization);
+        c = Main.meanOfEachThread(resultCorrelation);
     }
 }
 
@@ -250,43 +198,50 @@ class Main {
 
     public static void main(String[] args) {
         int N_t = 1000;
-        CircularArrayList<Integer> sigma_star;
-        MetropolisAlgorithm ma = new MetropolisAlgorithm();
+//        CircularArrayList<Integer> sigma_star;
+//        MetropolisAlgorithm ma = new MetropolisAlgorithm();
 
         //function names to call for the Metropolis Algorithm. They're in the run method, I wrote this for testing.
-        ma.setInitialSpinConfiguraton_Sigma0();
-        ma.createSigma1();
-        ma.replaceConfiguration();
-        ma.updateSpinGetCurrentConfig();
-        ma.computeMagnetizationPerSpin();
-        ma.pairCorrelationPerSpin();
+//        ma.setInitialSpinConfiguraton_Sigma0();
+//        ma.createSigma1();
+//        ma.replaceConfiguration();
+//        ma.updateSpinGetCurrentConfig();
+//        ma.computeMagnetizationPerSpin();
+//        ma.pairCorrelationPerSpin();
 
         //Begin threads.
-//        ExecutorService executor= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-//
-//        double[] m = new double[N_t];
-//        double[] c = new double[N_t];
-//        try{
-//            for ( int i=0; i < N_t; i++){
-//                executor.execute(new MetropolisAlgorithm());
-//                m[i] = meanOfEachThread(Magnetization.resultMagnetization);
-//                c[i] = meanOfEachThread(CorrelationPerSpin.resultCorrelation);
-//            }
-//        }catch(Exception err){
-//            err.printStackTrace();
-//        }
-//        executor.shutdown();
-//
-//        double meu = 0.0;
-//        double ceu = 0.0;
-//        try{
-//            for ( int j=0; j < N_t; j++){
-//                meu = sumOfAllThreads(m);
-//                ceu = sumOfAllThreads(c);
-//            }
-//        }catch(Exception err){
-//            err.printStackTrace();
-//        }
+        ExecutorService executor= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+        double[] m = new double[N_t];
+        double[] c = new double[N_t];
+        ArrayList<MetropolisAlgorithm> storeValues = new ArrayList<MetropolisAlgorithm>();
+
+        try{
+            for ( int i=0; i < N_t; i++){
+                MetropolisAlgorithm a = new MetropolisAlgorithm();
+                storeValues.add(a);
+                executor.execute(a); // Thread start
+            }
+        }catch(Exception err){
+            err.printStackTrace();
+        }
+        executor.shutdown();
+
+        for (int i=0; i <= storeValues.size(); i++) {
+            m[i] = storeValues.get(i).m;
+            c[i] = storeValues.get(i).c;
+        }
+
+        double meu = 0.0;
+        double ceu = 0.0;
+        try{
+            for ( int j=0; j < N_t; j++){
+                meu = sumOfAllThreads(m);
+                ceu = sumOfAllThreads(c);
+            }
+        }catch(Exception err){
+            err.printStackTrace();
+        }
     }
 }
 
