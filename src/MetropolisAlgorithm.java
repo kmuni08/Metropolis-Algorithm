@@ -19,8 +19,6 @@ public class MetropolisAlgorithm implements Runnable  {
     CircularArrayList<Integer> sigma1 = new CircularArrayList<>();
     CircularArrayList<Integer> currentConfiguration;
 
-
-
     public void setInitialSpinConfiguraton_Sigma0 () {
         for (int i = 0; i < n; i++) {
             if ((B>= 0 && C>=0))
@@ -121,9 +119,6 @@ public class MetropolisAlgorithm implements Runnable  {
 
     public double computeMagnetizationPerSpin () {
         CircularArrayList<Integer> sigma_star = currentConfiguration;
-        //2.3.1
-        // 1/n * summation from i = 1 to n of s_i
-        //thermodynamic averages for <m>
         if (sigma_star.isEmpty()) {
             return 0.0;
         }
@@ -132,18 +127,13 @@ public class MetropolisAlgorithm implements Runnable  {
         for (int i = 1; i <= n; i++) {
             summation += sigma_star.get(i);
         }
-        System.out.println("Sigma star: " + sigma_star + " Summation: " + summation);
-        System.out.println("Magnetization: " + ((1.0/n) * summation));
+//        System.out.println("Sigma star: " + sigma_star + " Summation: " + summation);
+//        System.out.println("Magnetization: " + ((1.0/n) * summation));
         return (1.0/n) * summation;
     }
 
     public double pairCorrelationPerSpin () {
         CircularArrayList<Integer> sigma_star = currentConfiguration;
-
-        //2.3.2
-        // 1/n * summation from i = 1 to n of s_i*s_i+1
-        //thermodynamic averages for <cp>
-
         if (sigma_star.isEmpty()) {
             return 0.0;
         }
@@ -153,9 +143,8 @@ public class MetropolisAlgorithm implements Runnable  {
             summation += sigma_star.get(i)*sigma_star.get(i+1);
         }
 
-        System.out.println("Sigma star: " + sigma_star + " Summation: " + summation);
-//
-        System.out.println("Correlation Per Spin Pair : " + ((1.0/n) * summation));
+//        System.out.println("Sigma star: " + sigma_star + " Summation: " + summation);
+//        System.out.println("Correlation Per Spin Pair : " + ((1.0/n) * summation));
         return (1.0/n) * summation;
     }
 
