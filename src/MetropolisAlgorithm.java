@@ -1,18 +1,16 @@
 //compute the initial configuration.
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class MetropolisAlgorithm implements Runnable  {
 
-    private int n = 10;
+    private int n = 100;
     private int B = 1;
     private int C = 1;
-    private int N_f = 4;
+    private int N_f = 25;
     private double T = 1.9;
-    public double m;
-    public double c;
+    public double magnetization;
+    public double correlationperpair;
     private int randomInt;
 
     CircularArrayList<Integer> sigma0 = new CircularArrayList<>();
@@ -162,76 +160,10 @@ public class MetropolisAlgorithm implements Runnable  {
             resultMagnetization.add(ma.computeMagnetizationPerSpin());
             resultCorrelation.add(ma.pairCorrelationPerSpin());
         }
-        m = Main.meanOfEachThread(resultMagnetization);
-        c = Main.meanOfEachThread(resultCorrelation);
+        magnetization = Main.meanOfEachThread(resultMagnetization);
+        correlationperpair = Main.meanOfEachThread(resultCorrelation);
     }
 }
 
-class Main {
-
-    public static double meanOfEachThread(ArrayList<Double> sum) {
-        double results = 0.0;
-        for(int j = 0; j < sum.size(); j++) {
-            results += sum.get(j);
-        }
-        return (1.0/sum.size()) * results;
-    }
-
-    public static double sumOfAllThreads(double[] thread_sum) {
-        double thread_results = 0.0;
-        for(int j = 0; j < thread_sum.length; j++) {
-            thread_results += thread_sum[j];
-        }
-        return (1.0/thread_sum.length) * thread_results;
-    }
-
-    public static void main(String[] args) {
-        int N_t = 1000;
-//        CircularArrayList<Integer> sigma_star;
-//        MetropolisAlgorithm ma = new MetropolisAlgorithm();
-
-        //function names to call for the Metropolis Algorithm. They're in the run method, I wrote this for testing.
-//        ma.setInitialSpinConfiguraton_Sigma0();
-//        ma.createSigma1();
-//        ma.replaceConfiguration();
-//        ma.updateSpinGetCurrentConfig();
-//        ma.computeMagnetizationPerSpin();
-//        ma.pairCorrelationPerSpin();
-
-        //Begin threads.
-        ExecutorService executor= Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
-        double[] m = new double[N_t];
-        double[] c = new double[N_t];
-        ArrayList<MetropolisAlgorithm> storeValues = new ArrayList<MetropolisAlgorithm>();
-
-        try{
-            for ( int i=0; i < N_t; i++){
-                MetropolisAlgorithm a = new MetropolisAlgorithm();
-                storeValues.add(a);
-                executor.execute(a); // Thread start
-            }
-        }catch(Exception err){
-            err.printStackTrace();
-        }
-        executor.shutdown();
-
-        for (int i=0; i <= storeValues.size(); i++) {
-            m[i] = storeValues.get(i).m;
-            c[i] = storeValues.get(i).c;
-        }
-
-        double meu = 0.0;
-        double ceu = 0.0;
-        try{
-            for ( int j=0; j < N_t; j++){
-                meu = sumOfAllThreads(m);
-                ceu = sumOfAllThreads(c);
-            }
-        }catch(Exception err){
-            err.printStackTrace();
-        }
-    }
-}
 
 
