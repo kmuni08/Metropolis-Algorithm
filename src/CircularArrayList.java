@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
-public class CircularArrayList<Integer> extends ArrayList<Integer> {
+public class CircularArrayList<Integer> extends ArrayList<Integer>
+{
 
     @Override
     public Integer get(int index)

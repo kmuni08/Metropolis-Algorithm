@@ -2,7 +2,9 @@ import java.util.ArrayList;
 import java.util.concurrent.*;
 
 public class Main {
-    public static double meanOfEachThread(ArrayList<Double> sum) {
+
+    public static double meanOfEachThread(ArrayList<Double> sum)
+    {
         double results = 0.0;
         for(int j = 0; j < sum.size(); j++) {
             results += sum.get(j);
@@ -10,7 +12,8 @@ public class Main {
         return (1.0/sum.size()) * results;
     }
 
-    public static double sumOfAllThreads(double[] thread_sum) {
+    public static double sumOfAllThreads(double[] thread_sum)
+    {
         double thread_results = 0.0;
         for(int j = 0; j < thread_sum.length; j++) {
             thread_results += thread_sum[j];
@@ -18,7 +21,9 @@ public class Main {
         return (1.0/thread_sum.length) * thread_results;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
+
         int N_t = 1000;
         //Begin threads.
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -41,10 +46,7 @@ public class Main {
             @Override
             public ArrayList <MetropolisAlgorithm> call() throws Exception {
                 try {
-                    for (int i = 0; i < storeValues.size(); i++) {
-                        System.out.println("Magnetization: " + i + " " + storeValues.get(i).magnetization + " " + "Correlation Per Spin: " + storeValues.get(i).correlationperpair);
-                    }
-//                    System.out.print("hi");
+                    System.out.print("Values in the arrays after computing the mean ");
                 }catch (Exception err) {
                     err.printStackTrace();
                 }
@@ -68,20 +70,15 @@ public class Main {
             c[i] = storeValues.get(i).correlationperpair;
         }
 
-        for (int i = 0; i < m.length; i++) {
-            System.out.println("Magnetization " + i + " " + m[i]);
-            System.out.println("Correlation per spin " + i + " " + c[i]);
+        double meu = 0.0;
+        double ceu = 0.0;
+        try{
+            meu = sumOfAllThreads(m);
+            System.out.println(meu);
+            ceu = sumOfAllThreads(c);
+            System.out.println(ceu);
+        }catch(Exception err){
+            err.printStackTrace();
         }
-
-//        double meu = 0.0;
-//        double ceu = 0.0;
-//        try{
-//            for ( int j=0; j < N_t; j++){
-//                meu = sumOfAllThreads(m);
-//                ceu = sumOfAllThreads(c);
-//            }
-//        }catch(Exception err){
-//            err.printStackTrace();
-//        }
     }
 }
