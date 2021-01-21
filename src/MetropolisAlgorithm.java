@@ -7,7 +7,7 @@ public class MetropolisAlgorithm implements Runnable{
     private int n = 100;
     private double B = 1.0;
     private double C = 0.0;
-    private int N_f = 25;
+    private int N_f = 10;
     private double T = 1.9;
     public double magnetization;
     public double correlationperpair;
@@ -75,34 +75,6 @@ public class MetropolisAlgorithm implements Runnable{
         return -1.0*(sum_of_B + sum_of_C);
     }
 
-//    public CircularArrayList<Integer> replaceConfiguration()
-//    {
-//        double deltaE = energyCompute(sigma1, B, C) - energyCompute(sigma0, B, C);
-//        double p = 0.0;
-//        if(deltaE < 0) {
-//            currentConfiguration = sigma1;
-//        } else if (deltaE>= 0) {
-//            p = Math.exp((-1.0*deltaE) / T);
-//        }
-//        double r = generateRandom(0, 1);
-//        if (r < p) {
-//            currentConfiguration = sigma1;
-//        } else {
-//            currentConfiguration = sigma0;
-//        }
-//        return currentConfiguration;
-//    }
-//
-//    public void updateSpinGetCurrentConfig()
-//    {
-//        CircularArrayList<Integer> temp = new CircularArrayList<>();
-//        temp.addAll(currentConfiguration);
-//        for(int i = 0; i < (N_f * n); i++) {
-//            sigma1 = changeSigma1(temp);
-//            temp = replaceConfiguration();
-//        }
-//    }
-
     public CircularArrayList<Integer> replaceConfiguration() {
         double deltaE = energyCompute(sigma1, B, C) - energyCompute(sigma0, B, C);
         double p = 0.0;
@@ -144,10 +116,9 @@ public class MetropolisAlgorithm implements Runnable{
         if (sigma_star.isEmpty()) {
             return 0.0;
         }
-
         int summation = 0;
-        for (int i = 0; i < sigma_star.size(); i++) {
-            summation += sigma_star.get(i);
+        for (Integer integer : sigma_star) {
+            summation += integer;
         }
 
         return (1.0/sigma_star.size()) * summation;
@@ -159,12 +130,10 @@ public class MetropolisAlgorithm implements Runnable{
         if (sigma_star.isEmpty()) {
             return 0.0;
         }
-
         int summation = 0;
         for (int i = 0; i < sigma_star.size(); i++) {
             summation += sigma_star.get(i)*sigma_star.get(i+1);
         }
-
         return (1.0/sigma_star.size()) * summation;
     }
 
@@ -174,7 +143,7 @@ public class MetropolisAlgorithm implements Runnable{
         MetropolisAlgorithm ma = new MetropolisAlgorithm();
         ArrayList<Double> resultMagnetization = new ArrayList<Double>();
         ArrayList<Double> resultCorrelation = new ArrayList<Double>();
-        for(int i = 0; i < 100; i++) {
+        for(int i = 0; i < 10; i++) {
             ma.setInitialSpinConfiguraton_Sigma0();
             ma.createSigma1();
             ma.replaceConfiguration();

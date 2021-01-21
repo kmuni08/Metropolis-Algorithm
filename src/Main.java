@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.concurrent.*;
 
 public class Main {
-
     public static double meanOfEachThread(ArrayList<Double> sum)
     {
         double results = 0.0;
@@ -23,9 +22,7 @@ public class Main {
 
     public static void main(String[] args)
     {
-
         int N_t = 1000;
-        //Begin threads.
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
         double[] m = new double[N_t];
