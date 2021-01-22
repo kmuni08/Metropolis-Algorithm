@@ -38,6 +38,18 @@ public class Main {
         return resultsVar/cpArr.length;
     }
 
+    private static Future<MetropolisAlgorithm> startM(ExecutorService executor) {
+        Future<MetropolisAlgorithm> future = executor.submit(new Callable<MetropolisAlgorithm>() {
+            @Override
+            public MetropolisAlgorithm call() {
+                MetropolisAlgorithm a = new MetropolisAlgorithm();
+                a.computationInThreads();
+                return a;
+            }
+        });
+        return future;
+    }
+
     public static void main(String[] args)
     {
         int N_t = 1000;
@@ -45,42 +57,27 @@ public class Main {
 
         double[] m = new double[N_t];
         double[] c = new double[N_t];
-        ArrayList<MetropolisAlgorithm> storeValues = new ArrayList<>();
+        ArrayList<Future<MetropolisAlgorithm>> storeValues = new ArrayList<>();
+        ArrayList<MetropolisAlgorithm> storeMAValues = new ArrayList<>();
 
         try {
             for (int i = 0; i < N_t; i++) {
-                MetropolisAlgorithm a = new MetropolisAlgorithm();
-                storeValues.add(a);
-                executor.execute(a); // Thread start
+                Future<MetropolisAlgorithm> future = startM(executor);
+                storeValues.add(future);
+            }
+
+            for (int i = 0; i < N_t; i++) {
+                storeMAValues.add(storeValues.get(i).get());
             }
         } catch (Exception err) {
             err.printStackTrace();
         }
 
-        Future<ArrayList <MetropolisAlgorithm>> future = executor.submit(new Callable<ArrayList <MetropolisAlgorithm>>() {
-            @Override
-            public ArrayList <MetropolisAlgorithm> call() throws Exception {
-                try {
-                    System.out.print("Values in the arrays after computing the mean ");
-                }catch (Exception err) {
-                    err.printStackTrace();
-                }
-                return storeValues;
-            }
-        });
-
-        try {
-            System.out.println(future.get());
-        } catch(ExecutionException e) {
-            System.out.println("Something went wrong");
-        } catch (InterruptedException e) {
-            System.out.println("Thread running the task was interrupted");
-        }
         executor.shutdown();
 
         for (int i = 0; i < storeValues.size(); i++) {
-            m[i] = storeValues.get(i).magnetization;
-            c[i] = storeValues.get(i).correlationperpair;
+            m[i] = storeMAValues.get(i).magnetization;
+            c[i] = storeMAValues.get(i).correlationperpair;
         }
 
         for (int i = 0; i < c.length; i++) {

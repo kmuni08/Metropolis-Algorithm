@@ -2,12 +2,12 @@
 
 import java.util.ArrayList;
 
-public class MetropolisAlgorithm implements Runnable{
+public class MetropolisAlgorithm {
 
     private int n = 100;
     private double B = 0.0;
     private double C = -1.0;
-    private int N_f = 15;
+    private int N_f = 10;
     private int N_m = 10;
     private double T = 1.9;
     public double magnetization;
@@ -169,8 +169,7 @@ public class MetropolisAlgorithm implements Runnable{
         return summation/sigma_star.size();
     }
 
-    @Override
-    public void run()
+    public void computationInThreads()
     {
         MetropolisAlgorithm ma = new MetropolisAlgorithm();
         ArrayList<Double> resultMagnetization = new ArrayList<Double>();
@@ -184,7 +183,6 @@ public class MetropolisAlgorithm implements Runnable{
             resultMagnetization.add(ma.computeMagnetizationPerSpin());
             resultCorrelation.add(ma.pairCorrelationPerSpin());
         }
-        System.out.println(resultCorrelation);
         magnetization = Main.meanOfEachThread(resultMagnetization);
         correlationperpair = Main.meanOfEachThread(resultCorrelation);
     }
