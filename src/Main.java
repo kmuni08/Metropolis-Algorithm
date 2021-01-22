@@ -20,6 +20,24 @@ public class Main {
         return (1.0/thread_sum.length) * thread_results;
     }
 
+    public static double relativeError(double[] cpArr, double cp)
+    {
+        double results = 0.0;
+        for (int j = 0; j < cpArr.length; j++) {
+            results += ((cpArr[j] - cp)/cp);
+        }
+        return results/cpArr.length;
+    }
+
+    public static double variance(double[] cpArr, double cp, double computedRelError)
+    {
+        double resultsVar = 0.0;
+        for (int j = 0; j < cpArr.length; j++) {
+            resultsVar += ((((cpArr[j] - cp)/cp) - computedRelError) * (((cpArr[j] - cp)/cp) - computedRelError));
+        }
+        return resultsVar/cpArr.length;
+    }
+
     public static void main(String[] args)
     {
         int N_t = 1000;
@@ -58,13 +76,15 @@ public class Main {
         } catch (InterruptedException e) {
             System.out.println("Thread running the task was interrupted");
         }
-
         executor.shutdown();
-
 
         for (int i = 0; i < storeValues.size(); i++) {
             m[i] = storeValues.get(i).magnetization;
             c[i] = storeValues.get(i).correlationperpair;
+        }
+
+        for (int i = 0; i < c.length; i++) {
+            System.out.println( "i" + " " + i + " " + c[i]);
         }
 
         double meu = 0.0;
@@ -77,5 +97,18 @@ public class Main {
         }catch(Exception err){
             err.printStackTrace();
         }
+
+        MetropolisAlgorithm computeC = new MetropolisAlgorithm();
+        //compute theoretical values
+        //cp = ((e ^ C/T) - e ^ (-C/T))/((e ^ C/T) + e ^ (-C/T))
+        double cp = (Math.exp(computeC.getC()/computeC.getT()) - Math.exp((-1 * computeC.getC())/computeC.getT()))
+                /(Math.exp(computeC.getC()/computeC.getT()) + Math.exp((-1 * computeC.getC())/computeC.getT()));
+
+        double computedRelativeError = relativeError(c, cp);
+        double computeVariance = variance(c, cp, computedRelativeError);
+
+        System.out.println("computed Relative Error " + computedRelativeError);
+        System.out.println("computed variance " + computeVariance);
+
     }
 }

@@ -5,9 +5,10 @@ import java.util.ArrayList;
 public class MetropolisAlgorithm implements Runnable{
 
     private int n = 100;
-    private double B = 1.0;
-    private double C = 0.0;
-    private int N_f = 10;
+    private double B = 0.0;
+    private double C = -1.0;
+    private int N_f = 15;
+    private int N_m = 10;
     private double T = 1.9;
     public double magnetization;
     public double correlationperpair;
@@ -16,6 +17,37 @@ public class MetropolisAlgorithm implements Runnable{
     CircularArrayList<Integer> sigma0 = new CircularArrayList<>();
     CircularArrayList<Integer> sigma1 = new CircularArrayList<>();
     CircularArrayList<Integer> currentConfiguration = new CircularArrayList<>();
+
+    public Double getB() {
+        return B;
+    }
+    public void setB(Double B) {
+        this.B= B;
+    }
+    public Double getC() {
+        return C;
+    }
+    public void setC(Double C) {
+        this.C = C;
+    }
+    public Double getT() {
+        return T;
+    }
+    public void setT(Double T) {
+        this.T= T;
+    }
+    public Integer getN_f() {
+        return N_f;
+    }
+    public void setN_f(Integer N_f) {
+        this.N_f= N_f;
+    }
+    public Integer getN_m() {
+        return N_m;
+    }
+    public void setN_m(Integer N_m) {
+        this.N_m= N_m;
+    }
 
     public void setInitialSpinConfiguraton_Sigma0 () {
         for (int i = 0; i < n; i++) {
@@ -116,12 +148,12 @@ public class MetropolisAlgorithm implements Runnable{
         if (sigma_star.isEmpty()) {
             return 0.0;
         }
-        int summation = 0;
-        for (Integer integer : sigma_star) {
-            summation += integer;
+        double summation = 0.0;
+        for (int i = 0; i < sigma_star.size(); i++) {
+            summation += sigma_star.get(i);
         }
 
-        return (1.0/sigma_star.size()) * summation;
+        return summation/sigma_star.size();
     }
 
     public double pairCorrelationPerSpin ()
@@ -130,11 +162,11 @@ public class MetropolisAlgorithm implements Runnable{
         if (sigma_star.isEmpty()) {
             return 0.0;
         }
-        int summation = 0;
+        double summation = 0.;
         for (int i = 0; i < sigma_star.size(); i++) {
             summation += sigma_star.get(i)*sigma_star.get(i+1);
         }
-        return (1.0/sigma_star.size()) * summation;
+        return summation/sigma_star.size();
     }
 
     @Override
@@ -143,7 +175,7 @@ public class MetropolisAlgorithm implements Runnable{
         MetropolisAlgorithm ma = new MetropolisAlgorithm();
         ArrayList<Double> resultMagnetization = new ArrayList<Double>();
         ArrayList<Double> resultCorrelation = new ArrayList<Double>();
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < N_m; i++) {
             ma.setInitialSpinConfiguraton_Sigma0();
             ma.createSigma1();
             ma.replaceConfiguration();
@@ -152,6 +184,7 @@ public class MetropolisAlgorithm implements Runnable{
             resultMagnetization.add(ma.computeMagnetizationPerSpin());
             resultCorrelation.add(ma.pairCorrelationPerSpin());
         }
+        System.out.println(resultCorrelation);
         magnetization = Main.meanOfEachThread(resultMagnetization);
         correlationperpair = Main.meanOfEachThread(resultCorrelation);
     }
