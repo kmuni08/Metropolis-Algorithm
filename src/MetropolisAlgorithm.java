@@ -7,7 +7,7 @@ public class MetropolisAlgorithm {
     private int n = 100;
     private double B = 0.0;
     private double C = -1.0;
-    private int N_f = 5;
+    private int N_f = 6;
     private int N_m = 10;
     private double T = 1.9;
     public double magnetization;
@@ -173,8 +173,6 @@ public class MetropolisAlgorithm {
         ArrayList<Double> resultCorrelation = new ArrayList<Double>();
         for(int i = 0; i < N_m; i++) {
             ma.setInitialSpinConfiguraton_Sigma0();
-            ma.createSigma1();
-            ma.replaceConfiguration();
             ma.updateSpinGetCurrentConfig();
             //waits for one thread to be done before another is put.
             resultMagnetization.add(ma.computeMagnetizationPerSpin());
