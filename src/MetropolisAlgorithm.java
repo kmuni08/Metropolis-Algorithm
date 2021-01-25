@@ -7,7 +7,7 @@ public class MetropolisAlgorithm {
     private int n = 100;
     private double B = 0.0;
     private double C = -1.0;
-    private int N_f = 10;
+    private int N_f = 5;
     private int N_m = 10;
     private double T = 1.9;
     public double magnetization;
@@ -108,23 +108,20 @@ public class MetropolisAlgorithm {
     }
 
     public CircularArrayList<Integer> replaceConfiguration() {
-        double deltaE = energyCompute(sigma1, B, C) - energyCompute(sigma0, B, C);
+        double deltaE = energyCompute(sigma1, B, C) - energyCompute(currentConfiguration, B, C);
         double p = 0.0;
         if(deltaE < 0) {
             currentConfiguration.clear();
             currentConfiguration.addAll(sigma1);
-        } else if (deltaE>= 0) {
+        } else {
             //pick a p value.
             p = Math.exp((-1.0*deltaE) / T);
-        }
-        double r = generateRandom(0, 1);
-        if (r < p) {
-            //set current configuration to be new configuration.
-            currentConfiguration.clear();
-            currentConfiguration.addAll(sigma1);
-        } else {
-            currentConfiguration.clear();
-            currentConfiguration.addAll(sigma0);
+            double r = generateRandom(0, 1);
+            if (r < p) {
+                //set current configuration to be new configuration.
+                currentConfiguration.clear();
+                currentConfiguration.addAll(sigma1);
+            }
         }
         return currentConfiguration;
     }

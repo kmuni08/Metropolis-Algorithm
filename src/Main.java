@@ -75,13 +75,9 @@ public class Main {
 
         executor.shutdown();
 
-        for (int i = 0; i < storeValues.size(); i++) {
+        for (int i = 0; i < storeMAValues.size(); i++) {
             m[i] = storeMAValues.get(i).magnetization;
             c[i] = storeMAValues.get(i).correlationperpair;
-        }
-
-        for (int i = 0; i < c.length; i++) {
-            System.out.println( "i" + " " + i + " " + c[i]);
         }
 
         double meu = 0.0;
@@ -98,8 +94,7 @@ public class Main {
         MetropolisAlgorithm computeC = new MetropolisAlgorithm();
         //compute theoretical values
         //cp = ((e ^ C/T) - e ^ (-C/T))/((e ^ C/T) + e ^ (-C/T))
-        double cp = (Math.exp(computeC.getC()/computeC.getT()) - Math.exp((-1 * computeC.getC())/computeC.getT()))
-                /(Math.exp(computeC.getC()/computeC.getT()) + Math.exp((-1 * computeC.getC())/computeC.getT()));
+        double cp = (Math.exp(computeC.getC()/computeC.getT()) - Math.exp((-1 * computeC.getC())/computeC.getT()))/(Math.exp(computeC.getC()/computeC.getT()) + Math.exp((-1 * computeC.getC())/computeC.getT()));
 
         double computedRelativeError = relativeError(c, cp);
         double computeVariance = variance(c, cp, computedRelativeError);
