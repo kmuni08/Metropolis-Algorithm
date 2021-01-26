@@ -5,11 +5,12 @@ import java.util.ArrayList;
 public class MetropolisAlgorithm {
 
     private int n = 100;
-    private double B = 0.0;
-    private double C = -1.0;
-    private int N_f = 6;
-    private int N_m = 10;
-    private double T = 1.9;
+    private double B = 0.46;
+    private double C = -0.50;
+//    private double B = 0.0;
+//    private double C = -1.0;
+    private int N_f = 10;
+    private int N_m = 50;
     public double magnetization;
     public double correlationperpair;
     private int randomInt;
@@ -29,12 +30,6 @@ public class MetropolisAlgorithm {
     }
     public void setC(Double C) {
         this.C = C;
-    }
-    public Double getT() {
-        return T;
-    }
-    public void setT(Double T) {
-        this.T= T;
     }
     public Integer getN_f() {
         return N_f;
@@ -115,7 +110,7 @@ public class MetropolisAlgorithm {
             currentConfiguration.addAll(sigma1);
         } else {
             //pick a p value.
-            p = Math.exp((-1.0*deltaE) / T);
+            p = Math.exp((-1.0*deltaE) / Main.getT());
             double r = generateRandom(0, 1);
             if (r < p) {
                 //set current configuration to be new configuration.
@@ -171,6 +166,7 @@ public class MetropolisAlgorithm {
         MetropolisAlgorithm ma = new MetropolisAlgorithm();
         ArrayList<Double> resultMagnetization = new ArrayList<Double>();
         ArrayList<Double> resultCorrelation = new ArrayList<Double>();
+
         for(int i = 0; i < N_m; i++) {
             ma.setInitialSpinConfiguraton_Sigma0();
             ma.updateSpinGetCurrentConfig();

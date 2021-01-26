@@ -2,6 +2,16 @@ import java.util.ArrayList;
 import java.util.concurrent.*;
 
 public class Main {
+
+    private static double T;
+    static double min_T = 0.01;
+    static double max_T = 2.000;
+    static double delta_T = 0.05;
+    public static Double getT() {
+        return T;
+    }
+    public void setT(Double T) { this.T= T; }
+
     public static double meanOfEachThread(ArrayList<Double> sum)
     {
         double results = 0.0;
@@ -33,7 +43,7 @@ public class Main {
     {
         double resultsVar = 0.0;
         for (int j = 0; j < cpArr.length; j++) {
-            resultsVar += ((((cpArr[j] - cp)/cp) - computedRelError) * (((cpArr[j] - cp)/cp) - computedRelError));
+            resultsVar += Math.pow((((cpArr[j] - cp)/cp) - computedRelError), 2);
         }
         return resultsVar/cpArr.length;
     }
@@ -59,48 +69,59 @@ public class Main {
         double[] c = new double[N_t];
         ArrayList<Future<MetropolisAlgorithm>> storeValues = new ArrayList<>();
         ArrayList<MetropolisAlgorithm> storeMAValues = new ArrayList<>();
+        ArrayList<Double> storeMagnetizationValues = new ArrayList<>();
+        ArrayList<Double> storeCorrelationPairValues = new ArrayList<>();
+        ArrayList<Double> computedRelativeErrorCpList = new ArrayList<>();
+        ArrayList<Double> computedVarianceCpList = new ArrayList<>();
 
-        try {
-            for (int i = 0; i < N_t; i++) {
-                Future<MetropolisAlgorithm> future = startM(executor);
-                storeValues.add(future);
+        Main mainVal = new Main();
+        MetropolisAlgorithm compute = new MetropolisAlgorithm();
+            try {
+                for (T = min_T; T <= max_T; T += delta_T) {
+                    mainVal.setT(T);
+                    if(!storeValues.isEmpty()) {
+                    storeValues.clear();
+                    }
+                    for (int i = 0; i < N_t; i++) {
+                        Future<MetropolisAlgorithm> future = startM(executor);
+                        storeValues.add(future);
+                    }
+
+                    if(!storeMAValues.isEmpty()) {
+                        storeMAValues.clear();
+                    }
+                    for (int i = 0; i < N_t; i++) {
+                        storeMAValues.add(storeValues.get(i).get());
+                    }
+                    for (int i = 0; i < storeMAValues.size(); i++) {
+                        m[i] = storeMAValues.get(i).magnetization;
+                        c[i] = storeMAValues.get(i).correlationperpair;
+                    }
+
+                    //try to do for loop and set temp somewhere here.
+                    try{
+                        storeMagnetizationValues.add(sumOfAllThreads(m));
+                        storeCorrelationPairValues.add(sumOfAllThreads(c));
+                    }catch(Exception err){
+                        err.printStackTrace();
+                    }
+
+                    double cp = (Math.exp(compute.getC()/getT()) - Math.exp((-1 * compute.getC())/getT()))/(Math.exp(compute.getC()/getT()) + Math.exp((-1 * compute.getC())/getT()));
+                    double computedRelativeErrorCp = Math.abs(relativeError(c, cp));
+                    double computeVarianceCp = variance(c, cp, computedRelativeErrorCp);
+                    computedRelativeErrorCpList.add(computedRelativeErrorCp);
+                    computedVarianceCpList.add(computeVarianceCp);
+                }
+
+            } catch (Exception err) {
+                err.printStackTrace();
             }
+            executor.shutdown();
 
-            for (int i = 0; i < N_t; i++) {
-                storeMAValues.add(storeValues.get(i).get());
-            }
-        } catch (Exception err) {
-            err.printStackTrace();
-        }
-
-        executor.shutdown();
-
-        for (int i = 0; i < storeMAValues.size(); i++) {
-            m[i] = storeMAValues.get(i).magnetization;
-            c[i] = storeMAValues.get(i).correlationperpair;
-        }
-
-        double meu = 0.0;
-        double ceu = 0.0;
-        try{
-            meu = sumOfAllThreads(m);
-            System.out.println(meu);
-            ceu = sumOfAllThreads(c);
-            System.out.println(ceu);
-        }catch(Exception err){
-            err.printStackTrace();
-        }
-
-        MetropolisAlgorithm computeC = new MetropolisAlgorithm();
-        //compute theoretical values
-        //cp = ((e ^ C/T) - e ^ (-C/T))/((e ^ C/T) + e ^ (-C/T))
-        double cp = (Math.exp(computeC.getC()/computeC.getT()) - Math.exp((-1 * computeC.getC())/computeC.getT()))/(Math.exp(computeC.getC()/computeC.getT()) + Math.exp((-1 * computeC.getC())/computeC.getT()));
-
-        double computedRelativeError = relativeError(c, cp);
-        double computeVariance = variance(c, cp, computedRelativeError);
-
-        System.out.println("computed Relative Error " + computedRelativeError);
-        System.out.println("computed variance " + computeVariance);
+        System.out.println("Sum of Threads in meu " + storeMagnetizationValues);
+        System.out.println("Sum of Threads in ceu " + storeCorrelationPairValues);
+        System.out.println("computed Relative Error for cp " + computedRelativeErrorCpList);
+        System.out.println("computed variance for cp " + computedVarianceCpList);
 
     }
 }
