@@ -4,13 +4,6 @@ import java.util.ArrayList;
 
 public class MetropolisAlgorithm {
 
-    private int n = 100;
-    private double B = 0.49;
-    private double C = -0.51;
-//    private double B = 0.0;
-//    private double C = -1.0;
-    private int N_f = 10;
-    private int N_m = 50;
     public double magnetization;
     public double correlationperpair;
     private int randomInt;
@@ -19,34 +12,9 @@ public class MetropolisAlgorithm {
     CircularArrayList<Integer> sigma1 = new CircularArrayList<>();
     CircularArrayList<Integer> currentConfiguration = new CircularArrayList<>();
 
-    public Double getB() {
-        return B;
-    }
-    public void setB(Double B) {
-        this.B= B;
-    }
-    public Double getC() {
-        return C;
-    }
-    public void setC(Double C) {
-        this.C = C;
-    }
-    public Integer getN_f() {
-        return N_f;
-    }
-    public void setN_f(Integer N_f) {
-        this.N_f= N_f;
-    }
-    public Integer getN_m() {
-        return N_m;
-    }
-    public void setN_m(Integer N_m) {
-        this.N_m= N_m;
-    }
-
     public void setInitialSpinConfiguraton_Sigma0 () {
-        for (int i = 0; i < n; i++) {
-            if (C>=0)
+        for (int i = 0; i < Main.getN(); i++) {
+            if (Main.getC()>=0)
             {
                 sigma0.add(1);
             }
@@ -85,7 +53,7 @@ public class MetropolisAlgorithm {
 
     public CircularArrayList<Integer> changeSigma1 (CircularArrayList<Integer> sigma)
     {
-        randomInt = generateRand(1, n);
+        randomInt = generateRand(1, Main.getN());
         sigma.set(randomInt, (-1)*(sigma.get(randomInt)));
         return sigma;
     }
@@ -103,7 +71,7 @@ public class MetropolisAlgorithm {
     }
 
     public CircularArrayList<Integer> replaceConfiguration() {
-        double deltaE = energyCompute(sigma1, B, C) - energyCompute(currentConfiguration, B, C);
+        double deltaE = energyCompute(sigma1, Main.getB(), Main.getC()) - energyCompute(currentConfiguration, Main.getB(), Main.getC());
         double p = 0.0;
         if(deltaE < 0) {
             currentConfiguration.clear();
@@ -125,7 +93,7 @@ public class MetropolisAlgorithm {
     {
         CircularArrayList<Integer> temp = new CircularArrayList<>();
         temp.addAll(currentConfiguration);
-        for(int i = 0; i < (N_f * n); i++) {
+        for(int i = 0; i < (Main.getN_f() * Main.getN()); i++) {
             //call sigma1 and energyCompute.
             sigma1.clear();
             sigma1.addAll(changeSigma1(temp));
@@ -167,7 +135,7 @@ public class MetropolisAlgorithm {
         ArrayList<Double> resultMagnetization = new ArrayList<Double>();
         ArrayList<Double> resultCorrelation = new ArrayList<Double>();
 
-        for(int i = 0; i < N_m; i++) {
+        for(int i = 0; i < Main.getN_m(); i++) {
             ma.setInitialSpinConfiguraton_Sigma0();
             ma.updateSpinGetCurrentConfig();
             //waits for one thread to be done before another is put.
