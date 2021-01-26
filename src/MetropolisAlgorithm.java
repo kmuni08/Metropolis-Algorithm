@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class MetropolisAlgorithm {
 
     private int n = 100;
-    private double B = 0.46;
-    private double C = -0.50;
+    private double B = 0.49;
+    private double C = -0.51;
 //    private double B = 0.0;
 //    private double C = -1.0;
     private int N_f = 10;
