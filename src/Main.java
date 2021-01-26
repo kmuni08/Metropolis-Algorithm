@@ -8,7 +8,7 @@ public class Main {
     private static double T;
     private static int n = 100;
     private static int N_f = 10;
-    private static int N_m = 50;
+    private static int N_m = 100;
     private static int N_t = 1000;
     static double t_min_val = 0.001;
     static double t_max_val = 2.00;
@@ -108,7 +108,7 @@ public class Main {
                 mainVal.setC(C);
                 if(!storeValues.isEmpty()) { storeValues.clear(); }
                 for (int i = 0; i < N_t; i++) {
-                    Future<MetropolisAlgorithm> future = startM(executor);
+                    Future<MetropolisAlgorithm> future = startMetropolis(executor);
                     storeValues.add(future);
                 }
 
@@ -147,7 +147,7 @@ public class Main {
         System.out.println("computed variance for cp " + computedVarianceCpList);
     }
 
-    private static Future<MetropolisAlgorithm> startM(ExecutorService executor) {
+    private static Future<MetropolisAlgorithm> startMetropolis(ExecutorService executor) {
         Future<MetropolisAlgorithm> future = executor.submit(new Callable<MetropolisAlgorithm>() {
             @Override
             public MetropolisAlgorithm call() {
@@ -163,14 +163,16 @@ public class Main {
     {
         int N_t = 1000;
 
+        //uncomment whichever challenges to view results.
+
         //Challenge 1
-        computationChallenge(N_t, 0.51, -0.51);
+//        computationChallenge(N_t, 0.51, -0.51);
 
         //Challenge 2
 //        computationChallenge(N_t, 0.25, -0.12);
 
         //Challenge 3
-//        computationChallenge(N_t, 0.30, -0.15);
+        computationChallenge(N_t, 0.30, -0.15);
 
     }
 }
