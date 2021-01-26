@@ -4,9 +4,9 @@ import java.util.concurrent.*;
 public class Main {
 
     private static double T;
-    static double min_T = 0.01;
-    static double max_T = 2.000;
-    static double delta_T = 0.05;
+    static double t_min_val = 0.01;
+    static double t_max_val = 2.000;
+    static double t_increase = 0.05;
     public static Double getT() {
         return T;
     }
@@ -77,7 +77,7 @@ public class Main {
         Main mainVal = new Main();
         MetropolisAlgorithm compute = new MetropolisAlgorithm();
             try {
-                for (T = min_T; T <= max_T; T += delta_T) {
+                for (T = t_min_val; T <= t_max_val; T += t_increase) {
                     mainVal.setT(T);
                     if(!storeValues.isEmpty()) {
                     storeValues.clear();
