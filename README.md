@@ -9,7 +9,7 @@ B = 0.51
 C = -0.51
 
 
-
+![](challenges/challenge1.jpg)
 
 
 
@@ -25,7 +25,7 @@ C = -0.12
 
 
 
-
+![](challenges/challenge2.jpg)
 
 
 
@@ -40,6 +40,7 @@ C = -0.15
 
 
 
+![](challenges/challenge3.jpg)
 
 
 
